@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "python_version": "3.12.10",
+  "config": {
+    "seed": 42,
+    "days": 730,
+    "start": "2023-01-01",
+    "horizon": 14,
+    "validation_folds": 12
+  },
+  "selected_model": "mean_28",
+  "selection_metric": "validation_mae",
+  "source_sha256": "b6b76a0b376d35b06dd03b0427abbfe6336e3f200b3964e75e1fafc87ed7d848",
+  "sha256": {
+    "demand.csv": "c5015a732d0280beacc8b9caa930390d43ee5837f40bf9f4f08ff8515e9495c2",
+    "predictions.csv": "87838a39764c30b97373b7e4252e5cbb57d86091a5ba6bf5e8aff1c12a46ddc4",
+    "metrics.csv": "a8c259966dd270fdf5d744fb3803836e33407969868ec6ef5a427a756c5ec322",
+    "metrics_by_series.csv": "697167c3c080f9b1edc5ff49db67c081d092a67a082c0199f4c5c2410a6136c8",
+    "metrics_by_horizon.csv": "d2a0922776e3f684efe6ab92ce41e74e438f57244b5d851adbd4d58875abff32",
+    "metrics_by_fold.csv": "318ec1994e6aa10972df4c19c777c85869466634f57825bef1acca5d32ae485d",
+    "report.md": "c2392f13ad6001f2d9ffc8c4c502b253add730fd417e55dccf60721501ae31dc"
+  }
+}

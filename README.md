@@ -1,4 +1,3 @@
-
 # FreshFlow
 
 ### Demand forecasting and inventory optimisation for perishable products
@@ -7,7 +6,53 @@ FreshFlow is a Python project exploring how demand forecasts can support better 
 
 The goal is to build a system that forecasts demand, estimates uncertainty and recommends replenishment quantities while considering product expiry, delivery lead times and operational constraints.
 
-> **Project status:** Early development. The project is being built phase by phase, starting with reproducible data generation, baseline forecasting and time-based evaluation.
+> **Project status:** Phase 1 implemented and locally verified. Reproducible synthetic data, three baseline forecasts, rolling validation and a separate final test are available. Inventory simulation and order recommendations are planned for later phases.
+
+## Run Phase 1
+
+Use **Python 3.12**. There are no third-party dependencies or installation steps.
+From the repository root:
+
+```bash
+python3 -m unittest -v
+python3 freshflow.py
+```
+
+On Windows, use `py -3.12` instead of `python3` if needed.
+
+The default run generates **13,140 demand rows** across 18 series, evaluates
+**12 rolling 14-day validation windows** and a **separate 14-day final test**,
+and writes CSV results, a Markdown report and a checksum manifest to `artifacts/`.
+The command also prints the report. Re-running replaces files in that directory.
+
+```bash
+python3 freshflow.py --seed 43 --output artifacts/seed43
+python3 freshflow.py --help
+```
+
+Read the [default benchmark](reports/phase1.md), [methodology and data dictionary](docs/phase1.md),
+and [project assessment and proposed improvements](docs/project-review.md).
+
+The default validation MAE selects the **28-day mean** (9.984 units); its final-test
+MAE is **11.164 units**. The four-week weekday mean has a slightly lower test MAE
+(10.986), but the selection remains based on validation. These are single-seed
+synthetic benchmark results, not evidence of inventory savings.
+
+## Repository Layout
+
+```text
+freshflow.py             # Generation, validation, forecasts, evaluation and CLI
+test_freshflow.py       # Standard-library checks (run via unittest)
+docs/phase1.md          # Data assumptions, split protocol and metric definitions
+docs/project-review.md  # Positioning, naming and next-phase recommendations
+reports/phase1.md       # Checked-in default benchmark
+reports/manifest.json  # Configuration and hashes for that benchmark
+.github/workflows/ci.yml # Tests and complete benchmark on push/PR
+```
+
+Generated `artifacts/` and Python caches are ignored by Git. The small report
+snapshot is committed so readers can inspect results without running the code.
+GitHub Actions is configured; its remote run will happen after the files are pushed.
 
 ## The Problem
 
@@ -52,7 +97,7 @@ FreshFlow will use this information to evaluate replenishment decisions and thei
 
 | Phase | Focus | Key Deliverables |
 |---|---|---|
-| 1 | Forecasting foundation | Synthetic data, validation checks, baseline models and rolling backtesting |
+| 1 — implemented | Forecasting foundation | Synthetic data, validation checks, baseline models and rolling backtesting |
 | 2 | Advanced forecasting | Feature engineering, statistical and machine learning models, segment-level diagnostics |
 | 3 | Forecast uncertainty | Quantile forecasts, interval calibration and demand scenarios |
 | 4 | Inventory simulation | Stock movements, expiry, deliveries, lost sales and cost accounting |
@@ -119,7 +164,7 @@ FreshFlow will evaluate prediction quality and decision quality separately.
 | Inventory outcomes | Total cost, unit fill rate, expired units and waste rate |
 | Operational feasibility | Constraint violations and optimisation runtime |
 
-Forecasting experiments will use chronological splits and rolling backtesting. Model selection will use validation data, with later periods reserved for evaluation.
+Phase 1 uses chronological rolling backtests. Model selection uses validation MAE, with a separate final test period. Later phases must lock a new holdout before development, because the Phase 1 test has now been inspected.
 
 ## Data and Assumptions
 
@@ -157,3 +202,31 @@ The project aims to demonstrate an end-to-end workflow covering:
 **Bodhisattwa Dhara**
 
 Developed as a portfolio and research-oriented project connecting forecasting, optimisation and operational decision-making.
+
+## Commit Phase 1
+
+If you downloaded the Phase 1 ZIP, extract it and copy the **contents** of its
+`FreshFlow/` folder into your existing repository checkout, including `.github/`
+and `.gitignore`. Replace the existing README with this updated version.
+Do not copy it as a nested `FreshFlow/FreshFlow/` directory.
+
+If you do not have a local checkout yet:
+
+```bash
+git clone https://github.com/bodhi12496/FreshFlow.git
+cd FreshFlow
+```
+
+After copying the files, run:
+
+```bash
+python3 -m unittest -v
+python3 freshflow.py
+git diff --check
+git status --short
+git add freshflow.py test_freshflow.py .gitignore .github/workflows/ci.yml README.md docs reports
+git commit -m "Build Phase 1 reproducible forecasting benchmark"
+git push origin main
+```
+
+No commit or push is performed by the Python pipeline.
