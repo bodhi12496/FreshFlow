@@ -1,0 +1,79 @@
+{
+  "phase": 2,
+  "smoke": false,
+  "python": "3.12.10",
+  "versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "scikit-learn": "1.9.0",
+    "matplotlib": "3.11.0",
+    "joblib": "1.5.3",
+    "threadpoolctl": "3.6.0"
+  },
+  "config": {
+    "seed": 2026,
+    "days": 1095,
+    "horizon": 14,
+    "validation_folds": 12,
+    "test_folds": 12,
+    "training_stride": 7,
+    "bootstrap_samples": 2000,
+    "bootstrap_block_days": 28,
+    "model": {
+      "loss": "squared_error",
+      "learning_rate": 0.08,
+      "max_iter": 100,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 20,
+      "l2_regularization": 1.0,
+      "early_stopping": false,
+      "random_state": 2026
+    }
+  },
+  "selected_model": "gb_global",
+  "selected_baseline": "weekday_mean_4",
+  "selection_metric": "validation_mae",
+  "features": [
+    "store",
+    "product",
+    "horizon_day",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "lag_28",
+    "mean_7",
+    "mean_28",
+    "mean_56",
+    "std_28",
+    "weekday_mean_4",
+    "weekday_sin",
+    "weekday_cos",
+    "year_sin",
+    "year_cos",
+    "time_index",
+    "promotion"
+  ],
+  "source_sha256": {
+    "freshflow.py": "b6b76a0b376d35b06dd03b0427abbfe6336e3f200b3964e75e1fafc87ed7d848",
+    "phase2.py": "b038872123368d02b3824795bd92c8c9fb6b7eee929102e30030c90c329b1d12",
+    "phase2_protocol.json": "88b892d69c6dc061f9709d7a8287c9b48ae97fc79dcda947cba59ab6e7b704d2",
+    "requirements.txt": "3a23c25e6f7515fef9f41da3ef45ecf55e8a3b86100a2afa21fc318b87dcffc6"
+  },
+  "sha256": {
+    "demand.csv": "ac15bd6e36aa2974f02d019a0b31692031b82b73a904b45ae76a7274861c58a8",
+    "predictions.csv": "c6ff13938bb33752307371b5559af43b4807787f8e04dbf95a34aebfde6c6dd4",
+    "metrics.csv": "d6d561e2cea7c93c4d5fca536a42cd7114245aaa8b427628ebca8f82793c0e71",
+    "paired_comparisons.csv": "52a6b4196298cfc06db12426170c9c12a91cae8561a815768a7cc30446910903",
+    "segment_comparisons.csv": "5068e8cb692c0e6fc8b67c7263e7fbd7579192d25e80cc96fa5de91422ff8a80",
+    "training_audit.csv": "205d2ccda70f904a3166dd57b3c3fe3afd5dc7fdb55bc519370bbed2027bb8ad",
+    "metrics_by_series.csv": "b53908533e8e41175d799972c357728699c63f59134c3b8d59f88a402a3b654c",
+    "metrics_by_store.csv": "9b62108f4678d1f85125b5960c4c88bdb034bf0771cd8def5305f41eb78f0706",
+    "metrics_by_product.csv": "6fa3879e330898376031fb7e2b7db4b2d573128ba292bcabb1a0ba9a5aa6d426",
+    "metrics_by_promotion.csv": "f845c94f9203c00445d00abc026c5d90be68abff5204a24b101c7c10e45a8500",
+    "metrics_by_horizon.csv": "019e7695f0acced347fafc1a34efd5876a4bd57b8e6be00d48b7e1df7db3db67",
+    "metrics_by_fold.csv": "d3c0eb89f7bfda331819a121cad2ebeff31e80511c8d3cbaac9c4a3ced3fdabe",
+    "protocol.json": "88b892d69c6dc061f9709d7a8287c9b48ae97fc79dcda947cba59ab6e7b704d2",
+    "report.md": "2c444816413490bce6d0add076de40a00aa6ee33f937f088dd4e1593e1023753",
+    "comparison.png": "1a5ff86992c1bff2e946213134d169060932bdd655777e4da1c1dbcdd2a5e80d"
+  }
+}

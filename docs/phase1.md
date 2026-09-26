@@ -117,7 +117,7 @@ and manifest are checked in under `reports/` for inspection without execution.
 
 ## Checks
 
-`python -m unittest -v` checks hand-calculated forecasts and metrics, zero
+`python -m unittest test_freshflow -v` checks hand-calculated forecasts and metrics, zero
 denominators, invalid data, seed reproducibility, split boundaries, and artifact
 hashes. A future-data perturbation check changes unseen demand and verifies that
 forecasts at the earlier origin remain identical. Another check changes test

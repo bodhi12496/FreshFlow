@@ -6,7 +6,53 @@ FreshFlow is a Python project exploring how demand forecasts can support better 
 
 The goal is to build a system that forecasts demand, estimates uncertainty and recommends replenishment quantities while considering product expiry, delivery lead times and operational constraints.
 
-> **Project status:** Phase 1 implemented and locally verified. Reproducible synthetic data, three baseline forecasts, rolling validation and a separate final test are available. Inventory simulation and order recommendations are planned for later phases.
+> **Project status:** Phases 1 and 2 implemented and locally verified. Baseline forecasts, gradient boosting, leakage checks, promotion/pooling ablations and paired statistical comparisons are available. Forecast uncertainty, inventory simulation and order recommendations remain later phases.
+
+## Run Phase 2
+
+Use **Python 3.12** from the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m unittest -v
+python phase2.py --smoke
+python phase2.py
+```
+
+On Windows, activate with `.venv\Scripts\activate` instead of `source`.
+The smoke run is a small integration check; the full run evaluates **six models**
+across **12 validation and 12 final-test folds**, each forecasting 14 days for all
+18 store-product series. The output is saved to `artifacts/phase2/`.
+
+**Updating from the Phase 1 ZIP?** Follow [these terminal-only update and commit instructions](UPDATE_PHASE2.md).
+They copy hidden files automatically.
+
+## Phase 2 results
+
+On the declared synthetic benchmark, the validation-selected **global gradient
+boosting** model reduces final-test MAE from **10.213 to 8.718 units**, a **14.6%**
+improvement over the validation-selected four-week weekday mean baseline.
+The test covers 168 days and 3,024 store-product-day forecast cases per model.
+
+| Question | Final-test finding |
+|---|---|
+| Does boosting beat the selected baseline? | Paired MAE difference −1.494 units; exploratory 95% block-bootstrap interval [−1.803, −1.233] |
+| Does explicit promotion information help? | Global model MAE 8.718 vs 9.500 without the promotion flag |
+| Is pooling better than separate models? | Global 8.718 vs local 8.721; difference interval [−0.072, 0.064] crosses zero |
+| Where does the chosen model help? | Improvements in all six aggregate product segments; berries 28.2%, milk 9.9% |
+
+![Phase 2 synthetic forecast comparison](reports/phase2/comparison.png)
+
+Read the [full benchmark](reports/phase2/report.md),
+[methodology and feature-availability rules](docs/phase2.md), and
+[case study with an evidence-backed résumé bullet](docs/phase2-case-study.md).
+
+These are results from one synthetic seed, with promotions assumed known in
+advance. They demonstrate a reproducible experiment, not verified retail savings.
+The intervals describe average forecast-error differences, not future-demand uncertainty.
+
 
 ## Run Phase 1
 
@@ -14,7 +60,7 @@ Use **Python 3.12**. There are no third-party dependencies or installation steps
 From the repository root:
 
 ```bash
-python3 -m unittest -v
+python3 -m unittest test_freshflow -v
 python3 freshflow.py
 ```
 
@@ -41,13 +87,16 @@ synthetic benchmark results, not evidence of inventory savings.
 ## Repository Layout
 
 ```text
-freshflow.py             # Generation, validation, forecasts, evaluation and CLI
-test_freshflow.py       # Standard-library checks (run via unittest)
-docs/phase1.md          # Data assumptions, split protocol and metric definitions
-docs/project-review.md  # Positioning, naming and next-phase recommendations
-reports/phase1.md       # Checked-in default benchmark
-reports/manifest.json  # Configuration and hashes for that benchmark
-.github/workflows/ci.yml # Tests and complete benchmark on push/PR
+freshflow.py             # Phase 1 data, validation, baselines and metrics
+phase2.py                # Features, boosting, comparisons and report generation
+phase2_protocol.json     # Declared experiment settings
+requirements.txt         # Tested Phase 2 dependencies
+test_freshflow.py         # Phase 1 checks
+test_phase2.py            # Temporal isolation and Phase 2 checks
+docs/                    # Methodology, case study and project assessment
+reports/                 # Small, checked-in benchmark snapshots
+UPDATE_PHASE2.md          # Terminal-only update and commit instructions
+.github/workflows/ci.yml  # Tests, Phase 1 and Phase 2 smoke check
 ```
 
 Generated `artifacts/` and Python caches are ignored by Git. The small report
@@ -98,7 +147,7 @@ FreshFlow will use this information to evaluate replenishment decisions and thei
 | Phase | Focus | Key Deliverables |
 |---|---|---|
 | 1 — implemented | Forecasting foundation | Synthetic data, validation checks, baseline models and rolling backtesting |
-| 2 | Advanced forecasting | Feature engineering, statistical and machine learning models, segment-level diagnostics |
+| 2 — implemented | Strong forecasting | Global/local gradient boosting, lag/calendar/promotion features, ablations and paired statistical comparisons |
 | 3 | Forecast uncertainty | Quantile forecasts, interval calibration and demand scenarios |
 | 4 | Inventory simulation | Stock movements, expiry, deliveries, lost sales and cost accounting |
 | 5 | Replenishment optimisation | Ordering policies and constrained optimisation under uncertain demand |
@@ -127,9 +176,7 @@ These establish a benchmark before introducing more complex models.
 
 ### Demand Forecasting
 
-Compare simple baselines with statistical and machine learning approaches.
-
-Candidate features include historical demand, lagged values, rolling statistics, calendar variables and promotions known at prediction time.
+Phase 2 compares the three baselines with global and per-series gradient boosting and a promotion-feature ablation. Origin-relative lags, rolling statistics, calendar features and scheduled promotions feed direct multi-horizon forecasts. Statistical comparisons use paired daily errors and a moving-block bootstrap.
 
 ### Uncertainty Estimation
 
@@ -164,7 +211,7 @@ FreshFlow will evaluate prediction quality and decision quality separately.
 | Inventory outcomes | Total cost, unit fill rate, expired units and waste rate |
 | Operational feasibility | Constraint violations and optimisation runtime |
 
-Phase 1 uses chronological rolling backtests. Model selection uses validation MAE, with a separate final test period. Later phases must lock a new holdout before development, because the Phase 1 test has now been inspected.
+Both phases use chronological rolling backtests and validation MAE for model selection. Phase 2 has a later 168-day rolling test. Future model development needs a new locked holdout because the reported evaluation periods have now been inspected.
 
 ## Data and Assumptions
 
@@ -180,7 +227,8 @@ Public retail data will be introduced for additional forecasting evaluation. Any
 
 - **Python:** Core implementation.
 - **Python standard library:** Initial forecasting pipeline.
-- **Planned additions:** Data processing libraries, forecasting and machine learning tools, optimisation solvers and Streamlit.
+- **Phase 2:** NumPy, scikit-learn and Matplotlib, with pinned dependencies.
+- **Planned additions:** Optimisation solvers and Streamlit when their phases begin.
 
 Dependencies will be introduced as the corresponding phases are implemented.
 
@@ -203,30 +251,7 @@ The project aims to demonstrate an end-to-end workflow covering:
 
 Developed as a portfolio and research-oriented project connecting forecasting, optimisation and operational decision-making.
 
-## Commit Phase 1
+## Update and commit
 
-If you downloaded the Phase 1 ZIP, extract it and copy the **contents** of its
-`FreshFlow/` folder into your existing repository checkout, including `.github/`
-and `.gitignore`. Replace the existing README with this updated version.
-Do not copy it as a nested `FreshFlow/FreshFlow/` directory.
-
-If you do not have a local checkout yet:
-
-```bash
-git clone https://github.com/bodhi12496/FreshFlow.git
-cd FreshFlow
-```
-
-After copying the files, run:
-
-```bash
-python3 -m unittest -v
-python3 freshflow.py
-git diff --check
-git status --short
-git add freshflow.py test_freshflow.py .gitignore .github/workflows/ci.yml README.md docs reports
-git commit -m "Build Phase 1 reproducible forecasting benchmark"
-git push origin main
-```
-
-No commit or push is performed by the Python pipeline.
+See [UPDATE_PHASE2.md](UPDATE_PHASE2.md) for extraction, environment setup, testing
+and exact Git commands. The pipeline never commits or pushes automatically.

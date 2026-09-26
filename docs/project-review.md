@@ -7,7 +7,7 @@ phases connect forecasting to uncertainty, operations and optimisation. A clean
 benchmark makes later improvements credible. A recruiter can inspect assumptions,
 reproduce the experiment and see what each added component contributes.
 
-Phase 1 proves the pipeline works; it does not yet answer the project's inventory
+Phases 1–2 establish and compare forecasting methods; they do not yet answer the project's inventory
 question. That answer requires the simulator, policies and controlled experiments.
 
 ## Is it unique?
@@ -55,14 +55,17 @@ that any alternative name is available.
 - Record configuration and checksums so results can be regenerated and audited.
 - Define zero-denominator metrics and disclose synthetic-data limitations.
 
-## What to do next
+## Phase 2 delivered and next steps
 
-Phase 2 should first compare one gradient-boosted model against these baselines,
-using lagged demand, lagged rolling features and information known at each origin.
-For a 14-day forecast, do not accidentally use realised day-1 demand as a day-2
-feature when both predictions are made at the same origin. Lock a new final
-evaluation period before feature selection, and inspect where gains occur by
-product and promotion status before adding more models.
+Phase 2 now includes global/local gradient boosting, a promotion ablation,
+origin-safe features, a later rolling test and paired error intervals. See the
+[case study](phase2-case-study.md) for the measured results and their limitations.
+
+Next, Phase 3 should add quantile forecasts and temporal calibration using
+separate training, calibration and final evaluation periods. Keep these point
+forecasters as comparators. Add external retail data before describing the
+results as real-world forecasting performance; inventory benefits still require
+the simulator and policy experiments in later phases.
 
 The portfolio contribution should be the evidence: which forecasting improvements
 survive realistic inventory constraints, and under which assumptions they stop helping.
